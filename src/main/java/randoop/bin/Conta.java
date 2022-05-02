@@ -1,11 +1,11 @@
 package randoop.bin;
 
 public class Conta {
-    private Pessoa cliente;
+    private PessoaFisica cliente;
     private double saldo;
 
 
-    public Conta(Pessoa cliente){
+    public Conta(PessoaFisica cliente){
         this.cliente = cliente;
         this.saldo = 100;
     }

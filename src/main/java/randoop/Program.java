@@ -11,6 +11,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.time.LocalDate;
 import java.util.*;
 
 public class Program {
@@ -23,11 +24,18 @@ public class Program {
         long startTime = System.currentTimeMillis();
         List<String> allSeqs = new ArrayList<String>();
 
-
         while(System.currentTimeMillis()-startTime < 100){
+            //objHash.clear();
+            //init();
             // Ler o nome da classe do txt
+            String className = "";
             BufferedReader buffRead = new BufferedReader(new FileReader(PATH));
-            String className = buffRead.readLine();
+            int p = 0;
+            while(p == 0)
+                p = genRandom.nextInt(5);
+            for(int i=0; i<p; i++){
+                className = buffRead.readLine();
+            }
 
             Class<?> clazz = Class.forName("randoop.bin." + className);
 
@@ -36,7 +44,8 @@ public class Program {
             if (allSeqs.size() == 0)
                 seqs = "";
             else
-                seqs = allSeqs.get(genRandom.nextInt(allSeqs.size()));
+                seqs = allSeqs.get(allSeqs.size()-1);
+                //seqs = allSeqs.get(genRandom.nextInt(allSeqs.size()));
 
             // Gerar objeto com construtor
             if(genRandom.nextInt(10) % 5 == 0){
@@ -45,8 +54,33 @@ public class Program {
                     Constructor<?>[] constructor = clazz.getDeclaredConstructors();
                     List<String> constructorParams = getConstructorParamsTypes(constructor);
 
+
                     // Criar uma variavel
                     String val = className.toLowerCase() + genRandom.nextInt(100);
+
+                                        // Criar a linha de Código
+                    String codeLine = className + " " + val + " = new " + className + "(";
+                    //System.out.println("\n===\n");
+                    if(constructorParams.size() != 0){
+                        for(String param : constructorParams){
+                            // trazer um obj ou literal
+                            param = param.replace("randoop.bin.", "");
+                            //System.out.println(param);
+                            codeLine += objHash.get(param).get(genRandom.nextInt(objHash.get(param).size())) + ", ";
+                        }
+                        codeLine += "EOF";
+                        codeLine = codeLine.replace(", EOF", ");\n");
+                    }else{
+                        codeLine += ");\n";
+                    }
+                    //System.out.println(codeLine);
+                    // adiciona o codigo na sequencia
+                    seqs += codeLine;
+
+                    // Testar seqs
+
+                    // Adicionar seqs a allSeqs
+                    allSeqs.add(seqs);
 
                     // Adicionar a variavel no hash de objetos
                     try{
@@ -57,27 +91,6 @@ public class Program {
                         // Cria lista se tiver vazio
                         objHash.put(className, new ArrayList<String>(){{add(val);}});
                     }
-
-                    // Criar a linha de Código
-                    String codeLine = className + " " + val + " = new " + className + "(";
-                    if(constructorParams.size() != 0){
-                        for(String param : constructorParams){
-                            // trazer um obj ou literal
-                            codeLine += objHash.get(param).get(genRandom.nextInt(objHash.get(param).size())) + ", ";
-                        }
-                        codeLine += "EOF";
-                        codeLine = codeLine.replace(", EOF", ");\n");
-                    }else{
-                        codeLine += ");\n";
-                    }
-
-                    // adiciona o codigo na sequencia
-                    seqs += codeLine;
-
-                    // Testar seqs
-
-                    // Adicionar seqs a allSeqs
-                    allSeqs.add(seqs);
                 }catch (Exception e){}
             }
             // usar metodo no objeto
@@ -90,13 +103,14 @@ public class Program {
                     // Pegar um metodo aleatório
                     int rdn = genRandom.nextInt(actualMethods.size());
                     String method = actualMethods.get(rdn);
-
+                    String codeLine = "";
                     // Pegar retorno do metodo
                     String returnType = methods[rdn].getReturnType().getName();
                     // Criar uma variavel
                     String val = returnType.toLowerCase() + genRandom.nextInt(100);
                     val = val.replace("java.lang.", "");
-                    String codeLine = returnType + " " + val + " = ";
+                    if(returnType != "void")
+                        codeLine = returnType + " " + val + " = ";
 
 
                     // Pegar parametros do metodo
@@ -259,6 +273,20 @@ public class Program {
                 add("\"hi\"");
                 add("\"nice\"");
                 add("\"go\"");
+            }
+        });
+        objHash.put("java.time.LocalDate", new ArrayList<String>(){
+            {
+                add("LocalDate.now()");
+            }
+        });
+        objHash.put("double", new ArrayList<String>(){
+            {
+                add("1.99");
+                add("-1.55");
+                add("0.0");
+                add("0.55");
+                add("105.5");
             }
         });
     }
