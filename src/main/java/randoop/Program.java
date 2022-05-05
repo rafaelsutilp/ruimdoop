@@ -15,18 +15,18 @@ import java.time.LocalDate;
 import java.util.*;
 
 public class Program {
-    static Map<String,List<String>> objHash = new HashMap<String, List<String>>();
+    static List<Map<String,List<String>>> objHash = new ArrayList<>();
     static Random genRandom = new Random();
     static String PATH = "C:\\Users\\rafae\\IdeaProjects\\Ruimdoop\\src\\main\\java\\randoop\\bin\\myclasses.txt";
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
-        init();
         long startTime = System.currentTimeMillis();
-        List<String> allSeqs = new ArrayList<String>();
 
-        while(System.currentTimeMillis()-startTime < 100){
-            //objHash.clear();
-            //init();
+        List<String> allSeqs = new ArrayList<>(){{add("");}};   // allSeqs.size = 1 // allSeqs = [""]
+        init();                                                 // objHash.size = 1 //
+
+        while(System.currentTimeMillis()-startTime < 1000){
+        //for(int pop=0; pop<10; pop++){
             // Ler o nome da classe do txt
             String className = "";
             BufferedReader buffRead = new BufferedReader(new FileReader(PATH));
@@ -40,25 +40,21 @@ public class Program {
             Class<?> clazz = Class.forName("randoop.bin." + className);
 
             // Seleciona uma sequencia aleatoriamente
-            String seqs;
-            if (allSeqs.size() == 0)
-                seqs = "";
-            else
-                seqs = allSeqs.get(allSeqs.size()-1);
-                //seqs = allSeqs.get(genRandom.nextInt(allSeqs.size()));
+            int posSeq = genRandom.nextInt(allSeqs.size());
+            String seqs = allSeqs.get(posSeq);
 
             // Gerar objeto com construtor
-            if(genRandom.nextInt(10) % 5 == 0){
+            String val="";
+            if(genRandom.nextInt(8) % 7 == 0){
                 try{
                     // Pegar os parametros do construtor
                     Constructor<?>[] constructor = clazz.getDeclaredConstructors();
                     List<String> constructorParams = getConstructorParamsTypes(constructor);
 
-
                     // Criar uma variavel
-                    String val = className.toLowerCase() + genRandom.nextInt(100);
+                    val = className.toLowerCase() + genRandom.nextInt(1000);
 
-                                        // Criar a linha de Código
+                    // Criar a linha de Código
                     String codeLine = className + " " + val + " = new " + className + "(";
                     //System.out.println("\n===\n");
                     if(constructorParams.size() != 0){
@@ -66,7 +62,8 @@ public class Program {
                             // trazer um obj ou literal
                             param = param.replace("randoop.bin.", "");
                             //System.out.println(param);
-                            codeLine += objHash.get(param).get(genRandom.nextInt(objHash.get(param).size())) + ", ";
+                            codeLine += objHash.get(posSeq).get(param).get(genRandom.nextInt(objHash.get(posSeq).get(param).size())) + ", ";
+                            //System.out.println("param");
                         }
                         codeLine += "EOF";
                         codeLine = codeLine.replace(", EOF", ");\n");
@@ -79,18 +76,26 @@ public class Program {
 
                     // Testar seqs
 
-                    // Adicionar seqs a allSeqs
-                    allSeqs.add(seqs);
+
 
                     // Adicionar a variavel no hash de objetos
+                    var tmp = copyMap(objHash.get(posSeq));
+                    objHash.add(tmp);
                     try{
                         // Add variavel
-                        objHash.get(className).add(val);
+                        //objHash.get(posSeq).get(className).add(val);
+                        objHash.get(objHash.size()-1).get(className).add(val);
                     }
                     catch(Exception e){
                         // Cria lista se tiver vazio
-                        objHash.put(className, new ArrayList<String>(){{add(val);}});
+                        //objHash.get(posSeq).put(className, new ArrayList<String>(){{add(val);}});
+                        String finalVal = val;
+                        objHash.get(objHash.size()-1).put(className, new ArrayList<>() {{
+                            add(finalVal);
+                        }});
                     }
+                    // Adicionar seqs a allSeqs
+                    allSeqs.add(seqs);
                 }catch (Exception e){}
             }
             // usar metodo no objeto
@@ -104,14 +109,15 @@ public class Program {
                     int rdn = genRandom.nextInt(actualMethods.size());
                     String method = actualMethods.get(rdn);
                     String codeLine = "";
+
                     // Pegar retorno do metodo
                     String returnType = methods[rdn].getReturnType().getName();
+
                     // Criar uma variavel
-                    String val = returnType.toLowerCase() + genRandom.nextInt(100);
+                    val = returnType.toLowerCase() + genRandom.nextInt(100);
                     val = val.replace("java.lang.", "");
                     if(returnType != "void")
                         codeLine = returnType + " " + val + " = ";
-
 
                     // Pegar parametros do metodo
                     List<String> methodParams = new ArrayList<>();
@@ -122,101 +128,68 @@ public class Program {
                     }
 
                     // Pega um objeto para aplicar o metodo
-                    String var = objHash.get(className).get(genRandom.nextInt(objHash.get(className).size()));
+                    String var = objHash.get(posSeq).get(className).get(genRandom.nextInt(objHash.get(posSeq).get(className).size()));
 
                     // Criar a linha de Código
                     codeLine += var + "." + method + "(";
                     if(methodParams.size() != 0){
                         for(String param : methodParams){
                             // trazer um obj ou literal
-                            codeLine += objHash.get(param).get(genRandom.nextInt(objHash.get(param).size())) + ", ";
+                            codeLine += objHash.get(posSeq).get(param).get(genRandom.nextInt(objHash.get(posSeq).get(param).size())) + ", ";
                         }
                         codeLine += "EOF";
                         codeLine = codeLine.replace(", EOF", ");\n");
                     }else{
                         codeLine += ");\n";
                     }
-
-                    // atribuir
-
                     // adiciona o codigo na sequencia
                     seqs += codeLine;
 
-                    // Testar seqs
+                    // linha de teste
+                    if(!val.startsWith("void")){
+                        String answer;
+                        answer = (val.startsWith("boolean")) ? "true" : "XXX";
+                        String test = "Assertions.assertEquals(" + val + ", " + answer + ");\n";
+                        System.out.println(seqs+test);
+                    }
+
+
+                    var tmp = copyMap(objHash.get(posSeq));
+                    try {
+                        tmp.get(returnType).add(val);
+                    }catch (Exception e){
+                        String finalVal1 = val;
+                        tmp.put(returnType, new ArrayList<>(){{add(finalVal1);}});
+                    }
+                    objHash.add(tmp);
 
                     // Adicionar seqs a allSeqs
                     allSeqs.add(seqs);
 
                 }catch (Exception e){}
             }
-
         }
+/*
         for(String asd : allSeqs){
             System.out.println(asd);
             System.out.println("\n\n");
-        }
-/*
-        try {
-            // Classe a ser adicionada
-            Class<?> clazz = Class.forName("randoop.bin.Endereco");
-
-            // Nome da classe
-            String className = clazz.getName().replace("randoop.bin.", "");
-
-            // Lista dos Parametros do Construtor
-            Constructor<?>[] constructor = clazz.getDeclaredConstructors();
-            List<String> constructorParams = getConstructorParamsTypes(constructor);
-
-            // Linha para declaração do objeto
-            String line = className + " " + className.toLowerCase() + genRandom.nextInt(500) + " = new " +
-                    className + "(";
-            for(String param : constructorParams)
-                line += objHash.get(param) + ",";
-            line += "EOF";
-            line = line.replace(",EOF", ");\n");
+        }*/
 
 
-            // Lista de Metodos da classe
-            Method[] methods = clazz.getDeclaredMethods();
-            List<String> actualMethods = getMethodNames(methods);
-
-            // Pegar um metodo aleatório
-            String method = actualMethods.get(genRandom.nextInt(actualMethods.size()));
-
-            // Pegar parametros do metodo
-            List<String> methodParams = new ArrayList<>();
-            for(Method x : methods){
-                if(x.getName() == method){
-                    methodParams = getParamsTypes(x);
-                }
-            }
-
-            // Sequencias de codigo
-            String seqs;
-            if(Seqs.size() == 0){
-                seqs = "";
-            }
-            else{
-                seqs = Seqs.get(genRandom.nextInt(Seqs.size()));
-            }
-
-
-            String newSeq =
-                    seqs +
-                    className + " b1 new " + className + "(";
-            if(methodParams.size() != 0){
-                for (String x : methodParams){
-                    newSeq += x + ",";
-                }
-                newSeq += "EOF";
-                newSeq = newSeq.replace(",EOF", ");\n");
-            }else{
-                newSeq += ");\n";
-            }
-
-
-
-
+        /*for(Map<String,List<String>> u : objHash){
+            var v = u.get("Endereco");
+            for(String z : v)
+                System.out.println(z);
+            System.out.println("====");
+            v = u.get("PessoaFisica");
+            for(String z : v)
+                System.out.println(z);
+            System.out.println("----");
+            v = u.get("PessoaJuridica");
+            for(String z : v)
+                System.out.println(z);
+            System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXX");
+        }*/
             //System.out.println(className);
             //System.out.println(paramsTypes);
             //System.out.println(line);
@@ -224,40 +197,12 @@ public class Program {
             //System.out.println(method);
             //System.out.println(methodParams);
             //System.out.println(newSeq);
-
-
-
-            String codeA =
-                    //"import org.junit.jupiter.api.Assertions;" + "\n" +
-                    //"import org.junit.jupiter.api.Test;" + "\n" +
-                    //"import java.util.Comparator;" + "\n" +
-                    "public class RegressionTest0 {" + "\n" +
-                    //"   @Test" + "\n" +
-                    "   public static void test0001(String name) {" + "\n" +
-                    "       System.out.println(\"Hello, \"+name);" + "\n" +
-                    //"       Assertions.assertEquals(\"Recife\", \"Recife\");" + "\n" +
-                    "   }" + "\n" +
-                    "}" + "\n";
-
-            String x = buildFileContent(line);
-            //System.out.println(x);
-
-            RuntimeCompiler r = new RuntimeCompiler();
-            r.addClass("TestJUnit", x);
-            r.compile();
-
-            MethodInvocationUtils.invokeStaticMethod(r.getCompiledClass("TestJUnit"),
-                    "TestJunit", "");
-
-
-
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }*/
     }
 
     private static void init(){
-        objHash.put("int", new ArrayList<String>(){
+        //System.out.println("SIZE: " + objHash.size());
+        objHash.add(new HashMap<>());
+        objHash.get(0).put("int", new ArrayList<>() {
             {
                 add("0");
                 add("-99");
@@ -266,7 +211,7 @@ public class Program {
                 add("-50");
             }
         });
-        objHash.put("java.lang.String", new ArrayList<String>(){
+        objHash.get(0).put("java.lang.String", new ArrayList<>() {
             {
                 add("\"hello\"");
                 add("\"top\"");
@@ -275,12 +220,12 @@ public class Program {
                 add("\"go\"");
             }
         });
-        objHash.put("java.time.LocalDate", new ArrayList<String>(){
+        objHash.get(0).put("java.time.LocalDate", new ArrayList<>() {
             {
                 add("LocalDate.now()");
             }
         });
-        objHash.put("double", new ArrayList<String>(){
+        objHash.get(0).put("double", new ArrayList<>() {
             {
                 add("1.99");
                 add("-1.55");
@@ -330,6 +275,20 @@ public class Program {
 
         return fileContent;
     }
-}
 
-// hash[class] -> List[methods]
+    public static <K, V> Map<K, V> copyMap(Map<K, V> original)
+    {
+
+        Map<K, V> second_Map = new HashMap<>();
+
+        // Start the iteration and copy the Key and Value
+        // for each Map to the other Map.
+        for (Map.Entry<K, V> entry : original.entrySet()) {
+
+            // using put method to copy one Map to Other
+            second_Map.put(entry.getKey(), (V) new ArrayList((Collection) entry.getValue()));
+        }
+
+        return second_Map;
+    }
+}
