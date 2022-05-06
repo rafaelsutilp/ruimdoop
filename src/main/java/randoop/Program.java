@@ -5,10 +5,7 @@ import randoop.bin.Endereco;
 import randoop.src.MethodInvocationUtils;
 import randoop.src.RuntimeCompiler;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.time.LocalDate;
@@ -71,8 +68,9 @@ public class Program {
                         codeLine += ");\n";
                     }
                     //System.out.println(codeLine);
+                    codeLine = "       " + codeLine;
                     // adiciona o codigo na sequencia
-                    seqs += codeLine;
+                    seqs = codeLine;
 
                     // Testar seqs
 
@@ -142,6 +140,8 @@ public class Program {
                     }else{
                         codeLine += ");\n";
                     }
+                    codeLine = "       " + codeLine;
+
                     // adiciona o codigo na sequencia
                     seqs += codeLine;
 
@@ -149,8 +149,11 @@ public class Program {
                     if(!val.startsWith("void")){
                         String answer;
                         answer = (val.startsWith("boolean")) ? "true" : "XXX";
-                        String test = "Assertions.assertEquals(" + val + ", " + answer + ");\n";
-                        System.out.println(seqs+test);
+                        String test = "       Assertions.assertEquals(" + val + ", " + answer + ");\n";
+                        //System.out.println(seqs+test);
+                        seqs+=test;
+                    }else{
+                        throw new Exception();
                     }
 
 
@@ -169,6 +172,8 @@ public class Program {
                 }catch (Exception e){}
             }
         }
+
+        addToFile(allSeqs);
 /*
         for(String asd : allSeqs){
             System.out.println(asd);
@@ -197,6 +202,32 @@ public class Program {
             //System.out.println(method);
             //System.out.println(methodParams);
             //System.out.println(newSeq);
+    }
+
+    private static void addToFile(List<String> allSeqs) throws IOException {
+        String file =
+            "import org.junit.jupiter.api.Assertions;\n" +
+            "import org.junit.jupiter.api.Test;\n" +
+            //"import org.junit.runners.MethodSorters;\n\n" +
+            //"@FixMethodOrder(MethodSorters.NAME_ASCENDING)\n" +
+            "public class RegressionTest {\n";
+        int i=0;
+        for(String seq : allSeqs){
+            if(!seq.contains("Assertions"))
+                continue;
+            i++;
+            file +=
+            "   @Test\n" +
+            "   public void test" + i + "() throws Throwable {\n" +
+            seq +
+            "   }\n\n";
+        }
+        file += "}\n";
+
+        BufferedWriter bufferedWriter = null;
+        bufferedWriter = new BufferedWriter(new FileWriter("C:\\Users\\rafae\\IdeaProjects\\Ruimdoop\\src\\test\\java\\randoop\\bin\\randoopTest.java"));
+        bufferedWriter.write(file);
+        bufferedWriter.close();
     }
 
     private static void init(){
@@ -259,22 +290,6 @@ public class Program {
         return paramsTypes;
     }
 
-    private static String buildFileContent(String line){
-        // Conteudo do arquivo
-        String fileContent =
-            //"import org.junit.Test;\n" +
-            //"import static org.junit.Assert.assertTrue;\n" +
-            "package randoop;\n" +
-            "import randoop.bin.Endereco;\n" +
-            "public class TestJUnit {\n" +
-            //"   @Test\n" +
-            "   public void TestJunit(){\n" +
-            "       " + line +
-            "   }\n" +
-            "}\n";
-
-        return fileContent;
-    }
 
     public static <K, V> Map<K, V> copyMap(Map<K, V> original)
     {
