@@ -1,13 +1,5 @@
 package randoop;
 
-<<<<<<< HEAD
-=======
-
-import randoop.bin.Endereco;
-import randoop.src.MethodInvocationUtils;
-import randoop.src.RuntimeCompiler;
-
->>>>>>> e99ff2feb60e072d8a7fef64940919ac43bc9606
 import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -72,20 +64,9 @@ public class Program {
                         codeLine += ");\n";
                     }
                     //System.out.println(codeLine);
-<<<<<<< HEAD
                     codeLine = "        " + codeLine;
                     // adiciona o codigo na sequencia
                     seqs += codeLine;
-=======
-                    codeLine = "       " + codeLine;
-                    // adiciona o codigo na sequencia
-                    seqs = codeLine;
-
-                    // Testar seqs
-
-
-
->>>>>>> e99ff2feb60e072d8a7fef64940919ac43bc9606
                     // Adicionar a variavel no hash de objetos
                     Map<String,List<String>> tmp = copyMap(objHash.get(posSeq));
                     objHash.add(tmp);
@@ -143,17 +124,11 @@ public class Program {
                     }else{
                         codeLine += ");\n";
                     }
-<<<<<<< HEAD
                     codeLine = "        " + codeLine;
-=======
-                    codeLine = "       " + codeLine;
-
->>>>>>> e99ff2feb60e072d8a7fef64940919ac43bc9606
                     // adiciona o codigo na sequencia
                     seqs += codeLine;
                     // linha de teste
                     if(!val.startsWith("void")){
-<<<<<<< HEAD
                         counter++;
                         String answer = (val.startsWith("boolean")) ? "true" : "XXX";
                         // construir assert
@@ -169,15 +144,6 @@ public class Program {
                             "    @Test\n" +
                             "    public void test" + counter + "() throws Throwable {\n" +
                             seqs + "    }\n";
-=======
-                        String answer;
-                        answer = (val.startsWith("boolean")) ? "true" : "XXX";
-                        String test = "       Assertions.assertEquals(" + val + ", " + answer + ");\n";
-                        //System.out.println(seqs+test);
-                        seqs+=test;
-                    }else{
-                        throw new Exception();
->>>>>>> e99ff2feb60e072d8a7fef64940919ac43bc9606
                     }
                     var tmp = copyMap(objHash.get(posSeq));
                     try {
@@ -192,7 +158,6 @@ public class Program {
                 }catch (Exception e){}
             }
         }
-<<<<<<< HEAD
         file += "}\n";
         BufferedWriter bufferedWriter = null;
         bufferedWriter = new BufferedWriter(new FileWriter("C:\\Users\\rafae\\IdeaProjects\\Ruimdoop\\src\\test\\java\\randoop\\bin\\RegressionTest.java"));
@@ -200,11 +165,6 @@ public class Program {
         bufferedWriter.close();
         System.out.println(file);
         /*
-=======
-
-        addToFile(allSeqs);
-/*
->>>>>>> e99ff2feb60e072d8a7fef64940919ac43bc9606
         for(String asd : allSeqs){
             System.out.println(asd);
             System.out.println("\n\n");
@@ -391,10 +351,6 @@ public class Program {
         return paramsTypes;
     }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> e99ff2feb60e072d8a7fef64940919ac43bc9606
     public static <K, V> Map<K, V> copyMap(Map<K, V> original)
     {
         Map<K, V> second_Map = new HashMap<>();
