@@ -8,19 +8,22 @@ public class PessoaFisica extends Pessoa{
     private String CPF;
     private LocalDate dataNascimento;
     private double salario;
+    private char letraFavorita;
 
     public PessoaFisica(
         String nome,
         Endereco endereco,
         String cpf,
         LocalDate dataNascimento,
-        double salario
+        double salario,
+        char letraFavorita
     ){
         this.nome = nome;
         this.endereco = endereco;
         this.CPF = cpf;
         this.dataNascimento = dataNascimento;
         this.salario = salario;
+        this.letraFavorita = letraFavorita;
     }
 
     public double calcularSalarioLiquido(){
@@ -47,8 +50,16 @@ public class PessoaFisica extends Pessoa{
         return this.salario;
     }
 
-    public void setSalario(float salario){
+    public char getLetraFavorita(){
+        return this.letraFavorita;
+    }
+
+    public void setSalario(double salario){
         this.salario = salario;
+    }
+    
+    public void setLetraFavorita(char letra){
+        this.letraFavorita = letra;
     }
 
     public int getIdade(){

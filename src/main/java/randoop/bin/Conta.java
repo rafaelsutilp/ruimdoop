@@ -3,11 +3,15 @@ package randoop.bin;
 public class Conta {
     private PessoaFisica cliente;
     private double saldo;
+    private short agencia;
+    private boolean poupanca;
 
 
-    public Conta(PessoaFisica cliente){
+    public Conta(PessoaFisica cliente, short agencia, boolean poupanca){
         this.cliente = cliente;
         this.saldo = 100;
+        this.agencia = agencia;
+        this.poupanca = poupanca;
     }
 
     public boolean Sacar(double valor){
@@ -32,5 +36,21 @@ public class Conta {
 
     public double getSaldo(){
         return this.saldo;
+    }
+
+    public boolean getPoupanca(){
+        return this.poupanca;
+    }
+
+    public short getAgencia(){
+        return this.agencia;
+    }
+
+    public void setAgencia(short agencia){
+        this.agencia = agencia;
+    }
+
+    public void setPoupanca(boolean poupanca){
+        this.poupanca = poupanca;
     }
 }
