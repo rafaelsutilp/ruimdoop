@@ -1,4 +1,1 @@
-Endereco
-PessoaFisica
-PessoaJuridica
-Conta
+Calculadora

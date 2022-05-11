@@ -1,5 +1,7 @@
 package randoop;
 
+import randoop.bin.Calculadora;
+
 import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -17,20 +19,18 @@ public class Program {
                 "package randoop.bin;\n\n" +
                 "import org.junit.jupiter.api.Assertions;\n" +
                 "import org.junit.jupiter.api.Test;\n" +
-                "import randoop.bin.Endereco;\n" +
-                "import randoop.bin.PessoaFisica;\n" +
-                "import randoop.bin.PessoaJuridica;\n" +
                 "import java.time.LocalDate;\n\n" +
                 "public class RegressionTest {\n";
         List<String> allSeqs = new ArrayList<>(){{add("");}};
         init();
+        boolean success = true;
         while(System.currentTimeMillis()-startTime < 1000){
             // Ler o nome da classe do txt
             String className = "";
             BufferedReader buffRead = new BufferedReader(new FileReader(PATH));
             int p = 0;
             while(p == 0)
-                p = genRandom.nextInt(5);
+                p = genRandom.nextInt(2);
             for(int i=0; i<p; i++){
                 className = buffRead.readLine();
             }
@@ -40,7 +40,8 @@ public class Program {
             String seqs = allSeqs.get(posSeq);
             // Gerar objeto com construtor
             String val="";
-            if(genRandom.nextInt(8) % 7 == 0){
+            if(genRandom.nextInt(8) % 7 == 0 && success == true){
+                success = false;
                 try{
                     // Pegar os parametros do construtor
                     Constructor<?>[] constructor = clazz.getDeclaredConstructors();
@@ -114,10 +115,17 @@ public class Program {
                     String var = objHash.get(posSeq).get(className).get(genRandom.nextInt(objHash.get(posSeq).get(className).size()));
                     // Criar a linha de Código
                     codeLine += var + "." + method + "(";
+                    List<String> argValues = new ArrayList<>();
+                    int c = 0;
+                    String parametro = "";
                     if(methodParams.size() != 0){
                         for(String param : methodParams){
                             // trazer um obj ou literal
-                            codeLine += objHash.get(posSeq).get(param).get(genRandom.nextInt(objHash.get(posSeq).get(param).size())) + ", ";
+                            var temp = objHash.get(posSeq).get(param).get(genRandom.nextInt(objHash.get(posSeq).get(param).size()));
+                            argValues.add(temp);
+                            parametro = param;
+                            codeLine += temp + ", ";
+                            c++;
                         }
                         codeLine += "EOF";
                         codeLine = codeLine.replace(", EOF", ");\n");
@@ -130,6 +138,22 @@ public class Program {
                     // linha de teste
                     if(!val.startsWith("void")){
                         counter++;
+                        Calculadora op = new Calculadora();
+                        Object result = new Object();
+                        switch(parametro){
+                            case "double":
+                                result = methods[rdn].invoke(op, Double.parseDouble(argValues.get(0)),  Double.parseDouble(argValues.get(1)));
+                            break;
+                            case "int":
+                                result = methods[rdn].invoke(op, Integer.parseInt(argValues.get(0)),  Integer.parseInt(argValues.get(1)));
+                            break;
+                            case "java.lang.String":
+                                result = methods[rdn].invoke(op, argValues.get(0));
+                            break;
+                            case "boolean":
+                                result = methods[rdn].invoke(op, Boolean.parseBoolean(argValues.get(0)),  Boolean.parseBoolean(argValues.get(1)));
+                            break;
+                        }
                         String answer = (val.startsWith("boolean")) ? "true" : "XXX";
                         // construir assert
                         /*
@@ -137,7 +161,7 @@ public class Program {
                         for(String execLine : execLines){
                         }
                         */
-                        String test = "        Assertions.assertEquals(" + val + ", " + answer + ");\n";
+                        String test = "        Assertions.assertEquals(" + val + ", " + result + ");\n";
                         seqs += test;
                         // Adicionar seqs + test no file
                         file +=
@@ -175,8 +199,6 @@ public class Program {
         String file =
             "import org.junit.jupiter.api.Assertions;\n" +
             "import org.junit.jupiter.api.Test;\n" +
-            //"import org.junit.runners.MethodSorters;\n\n" +
-            //"@FixMethodOrder(MethodSorters.NAME_ASCENDING)\n" +
             "public class RegressionTest {\n";
         int i=0;
         for(String seq : allSeqs){
@@ -202,55 +224,55 @@ public class Program {
         objHash.get(0).put("short", new ArrayList<>() {
             {
                 add("(short)0");
-                add("(short)3277");
-                add("(short)-3268");
-                add("(short)1267");
-                add("(short)-1267");
-                add("(short)327");
-                add("(short)-327");
-                add("(short)767");
-                add("(short)-767");
+                add("(short)-1000");
+                add("(short)-500");
+                add("(short)-250");
+                add("(short)-100");
+                add("(short)100");
+                add("(short)250");
+                add("(short)500");
+                add("(short)1000");
                 //add("null");
             }
         });
         objHash.get(0).put("int", new ArrayList<>() {
             {
                 add("0");
-                add("214748347");
-                add("-214743648");
-                add("114748648");
-                add("-114743648");
-                add("743647");
-                add("-748648");
-                add("114743");
-                add("-117483");
+                add("-1000");
+                add("-500");
+                add("-250");
+                add("-100");
+                add("100");
+                add("250");
+                add("500");
+                add("1000");
                 //add("null");
             }
         });
         objHash.get(0).put("long", new ArrayList<>() {
             {
                 add("0");
-                add("-9222808");
-                add("922507");
-                add("322307");
-                add("-2227");
-                add("-3378");
-                add("3720807");
-                add("3223854");
-                add("-22547");
+                add("-1000");
+                add("-500");
+                add("-250");
+                add("-100");
+                add("100");
+                add("250");
+                add("500");
+                add("1000");
                 //add("null");
             }
         });
         objHash.get(0).put("java.lang.String", new ArrayList<>() {
             {
-                add("\"hello\"");
-                add("\"top\"");
-                add("\"hi\"");
-                add("\"nice\"");
-                add("\"go\"");
-                add("\"lorem\"");
-                add("\"ipsum\"");
-                add("\"valeu\"");
+                add("\"HelLo\"");
+                add("\"tOp\"");
+                add("\"hI\"");
+                add("\"NicE\"");
+                add("\"Go\"");
+                add("\"lOrEm\"");
+                add("\"IpsUm\"");
+                add("\"vAlEu\"");
                 //add("null");
             }
         });
