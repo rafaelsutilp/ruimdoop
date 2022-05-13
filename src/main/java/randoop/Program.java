@@ -8,7 +8,7 @@ import java.util.*;
 public class Program {
     static List<Map<String,List<String>>> objHash = new ArrayList<>();
     static Random genRandom = new Random();
-    static String PATH = "C:\\Users\\ruimdoop\\src\\main\\java\\randoop\\bin\\myclasses.txt";
+    static String PATH = "C:\\Users\\rafae\\IdeaProjects\\Ruimdoop\\src\\main\\java\\randoop\\bin\\myclasses.txt";
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         long startTime = System.currentTimeMillis();
@@ -160,7 +160,7 @@ public class Program {
         }
         file += "}\n";
         BufferedWriter bufferedWriter = null;
-        bufferedWriter = new BufferedWriter(new FileWriter("C:\\Users\\ruimdoop\\src\\test\\java\\randoop\\bin\\RegressionTest.java"));
+        bufferedWriter = new BufferedWriter(new FileWriter("C:\\Users\\rafae\\IdeaProjects\\Ruimdoop\\src\\test\\java\\randoop\\bin\\RegressionTest.java"));
         bufferedWriter.write(file);
         bufferedWriter.close();
         System.out.println(file);
