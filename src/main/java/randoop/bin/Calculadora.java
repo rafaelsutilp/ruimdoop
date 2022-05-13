@@ -16,7 +16,10 @@ public class Calculadora {
         return num1 * num2;
     }
 
-    public int divInt(int num1, int num2){
+    public int divInt(int num1, int num2) throws Exception {
+        if (num2 == 0) {
+            throw new Exception("Divisão por zero");
+        }
         return num1/num2;
     }
 
@@ -40,7 +43,10 @@ public class Calculadora {
         return num1 * num2;
     }
 
-    public double divDouble(double num1, double num2){
+    public double divDouble(double num1, double num2) throws Exception {
+        if (num2 == 0) {
+            throw new Exception("Divisão por zero");
+        }
         return num1/num2;
     }
 

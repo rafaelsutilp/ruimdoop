@@ -10,7 +10,7 @@ import java.util.*;
 public class Program {
     static List<Map<String,List<String>>> objHash = new ArrayList<>();
     static Random genRandom = new Random();
-    static String PATH = "C:\\Users\\rafae\\IdeaProjects\\Ruimdoop\\src\\main\\java\\randoop\\bin\\myclasses.txt";
+    static String PATH = "C:\\Users\\ruimdoop\\src\\main\\java\\randoop\\bin\\myclasses.txt";
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         long startTime = System.currentTimeMillis();
@@ -100,7 +100,7 @@ public class Program {
                     String codeLine = "";
                     // Pegar retorno do metodo
                     String returnType = methods[rdn].getReturnType().getName();
-                    val = returnType.toLowerCase() + genRandom.nextInt(1000);
+                    val = returnType.toLowerCase() + genRandom.nextInt(10000);
                     val = val.replace("java.lang.", "");
                     if(returnType != "void")
                         codeLine = returnType + " " + val + " = ";
@@ -149,12 +149,14 @@ public class Program {
                             break;
                             case "java.lang.String":
                                 result = methods[rdn].invoke(op, argValues.get(0));
+                                if (result.toString().toLowerCase().startsWith("string")) {
+                                    throw new Exception();
+                                }
                             break;
                             case "boolean":
                                 result = methods[rdn].invoke(op, Boolean.parseBoolean(argValues.get(0)),  Boolean.parseBoolean(argValues.get(1)));
                             break;
                         }
-                        String answer = (val.startsWith("boolean")) ? "true" : "XXX";
                         // construir assert
                         /*
                         String[] execLines = seqs.split("\n");
@@ -184,7 +186,7 @@ public class Program {
         }
         file += "}\n";
         BufferedWriter bufferedWriter = null;
-        bufferedWriter = new BufferedWriter(new FileWriter("C:\\Users\\rafae\\IdeaProjects\\Ruimdoop\\src\\test\\java\\randoop\\bin\\RegressionTest.java"));
+        bufferedWriter = new BufferedWriter(new FileWriter("C:\\Users\\ruimdoop\\src\\test\\java\\randoop\\bin\\RegressionTest.java"));
         bufferedWriter.write(file);
         bufferedWriter.close();
         System.out.println(file);
@@ -193,30 +195,6 @@ public class Program {
             System.out.println(asd);
             System.out.println("\n\n");
         }*/
-    }
-
-    private static void addToFile(List<String> allSeqs) throws IOException {
-        String file =
-            "import org.junit.jupiter.api.Assertions;\n" +
-            "import org.junit.jupiter.api.Test;\n" +
-            "public class RegressionTest {\n";
-        int i=0;
-        for(String seq : allSeqs){
-            if(!seq.contains("Assertions"))
-                continue;
-            i++;
-            file +=
-            "   @Test\n" +
-            "   public void test" + i + "() throws Throwable {\n" +
-            seq +
-            "   }\n\n";
-        }
-        file += "}\n";
-
-        BufferedWriter bufferedWriter = null;
-        bufferedWriter = new BufferedWriter(new FileWriter("C:\\Users\\rafae\\IdeaProjects\\Ruimdoop\\src\\test\\java\\randoop\\bin\\randoopTest.java"));
-        bufferedWriter.write(file);
-        bufferedWriter.close();
     }
 
     private static void init(){
