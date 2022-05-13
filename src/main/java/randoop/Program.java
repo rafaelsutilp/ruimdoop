@@ -8,7 +8,7 @@ import java.util.*;
 public class Program {
     static List<Map<String,List<String>>> objHash = new ArrayList<>();
     static Random genRandom = new Random();
-    static String PATH = "C:\\Users\\rafae\\IdeaProjects\\Ruimdoop\\src\\main\\java\\randoop\\bin\\myclasses.txt";
+    static String PATH = "C:\\Users\\ruimdoop\\src\\main\\java\\randoop\\bin\\myclasses.txt";
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         long startTime = System.currentTimeMillis();
@@ -160,7 +160,7 @@ public class Program {
         }
         file += "}\n";
         BufferedWriter bufferedWriter = null;
-        bufferedWriter = new BufferedWriter(new FileWriter("C:\\Users\\rafae\\IdeaProjects\\Ruimdoop\\src\\test\\java\\randoop\\bin\\RegressionTest.java"));
+        bufferedWriter = new BufferedWriter(new FileWriter("C:\\Users\\ruimdoop\\src\\test\\java\\randoop\\bin\\RegressionTest.java"));
         bufferedWriter.write(file);
         bufferedWriter.close();
         System.out.println(file);
@@ -169,32 +169,6 @@ public class Program {
             System.out.println(asd);
             System.out.println("\n\n");
         }*/
-    }
-
-    private static void addToFile(List<String> allSeqs) throws IOException {
-        String file =
-            "import org.junit.jupiter.api.Assertions;\n" +
-            "import org.junit.jupiter.api.Test;\n" +
-            //"import org.junit.runners.MethodSorters;\n\n" +
-            //"@FixMethodOrder(MethodSorters.NAME_ASCENDING)\n" +
-            "public class RegressionTest {\n";
-        int i=0;
-        for(String seq : allSeqs){
-            if(!seq.contains("Assertions"))
-                continue;
-            i++;
-            file +=
-            "   @Test\n" +
-            "   public void test" + i + "() throws Throwable {\n" +
-            seq +
-            "   }\n\n";
-        }
-        file += "}\n";
-
-        BufferedWriter bufferedWriter = null;
-        bufferedWriter = new BufferedWriter(new FileWriter("C:\\Users\\rafae\\IdeaProjects\\Ruimdoop\\src\\test\\java\\randoop\\bin\\randoopTest.java"));
-        bufferedWriter.write(file);
-        bufferedWriter.close();
     }
 
     private static void init(){
